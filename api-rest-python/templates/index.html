@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Usuarios</title>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <h1>Gestión de Usuarios 👥</h1>
+
+  <!-- Ver todos los usuarios -->
+  <h2>Ver Usuarios</h2>
+  <button onclick="getUsers()">Mostrar todos</button>
+  <button onclick="hideUsers()">Ocultar</button>
+  <div id="usersList" class="resultado"></div>
+
+  <!-- Buscar usuario por ID -->
+  <h2>Buscar Usuario por ID</h2>
+  <input type="number" id="searchId" placeholder="ID de usuario">
+  <button onclick="getUserById()">Buscar</button>
+  <div id="userResult" class="resultado"></div>
+
+  <!-- Agregar usuario -->
+  <h2>Agregar Usuario</h2>
+  <input type="text" id="newUserName" placeholder="Nombre del usuario">
+  <button onclick="addUser()">Agregar</button>
+  <div id="addResult" class="resultado"></div>
+
+  <!-- Actualizar usuario -->
+  <h2>Actualizar Usuario</h2>
+  <input type="number" id="updateId" placeholder="ID de usuario">
+  <input type="text" id="updateName" placeholder="Nuevo nombre">
+  <button onclick="updateUser()">Actualizar</button>
+  <div id="updateResult" class="resultado"></div>
+
+  <!-- Eliminar usuario -->
+  <h2>Eliminar Usuario</h2>
+  <input type="number" id="deleteId" placeholder="ID de usuario">
+  <button onclick="deleteUser()">Eliminar</button>
+  <div id="deleteResult" class="resultado"></div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:5000/api/users";
+
+    async function getUsers() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      document.getElementById("usersList").innerText = JSON.stringify(data, null, 2);
+    }
+
+    function hideUsers() {
+      document.getElementById("usersList").innerText = "";
+    }
+
+    async function getUserById() {
+      const id = document.getElementById("searchId").value;
+      if (!id) return alert("Ingrese un ID");
+      const res = await fetch(`${API_URL}/${id}`);
+      const data = await res.json();
+      document.getElementById("userResult").innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function addUser() {
+      const name = document.getElementById("newUserName").value;
+      if (!name) return alert("Ingrese un nombre");
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre: name })
+      });
+      const data = await res.json();
+      document.getElementById("addResult").innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function updateUser() {
+      const id = document.getElementById("updateId").value;
+      const name = document.getElementById("updateName").value;
+      if (!id || !name) return alert("Ingrese ID y nombre");
+      const res = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre: name })
+      });
+      const data = await res.json();
+      document.getElementById("updateResult").innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function deleteUser() {
+      const id = document.getElementById("deleteId").value;
+      if (!id) return alert("Ingrese un ID");
+      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      document.getElementById("deleteResult").innerText = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
